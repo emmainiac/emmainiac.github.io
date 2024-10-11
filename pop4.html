@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pop Up Explosion</title>
+    <style>
+        body {
+            background-color: #F0F0F0;
+            font-family: Arial, sans-serif;
+        }
+
+        .popup {
+            position: absolute;
+            width: 300px;
+            height: 150px;
+            background-color: #E8E8E8;
+            border: 2px solid #A9A9A9;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+            color: black;
+            padding: 15px;
+            z-index: 1000;
+        }
+
+        .popup-header {
+            background-color: #C0C0C0;
+            padding: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .popup-header span {
+            font-weight: bold;
+        }
+
+        .popup-header button {
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .popup-body {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Flashing warning symbol */
+        .warning-symbol {
+            font-size: 24px;
+            margin-right: 10px;
+            animation: flash 1s infinite;
+        }
+
+        /* Animation to flash between red and black */
+        @keyframes flash {
+            0% { color: red; }
+            50% { color: black; }
+            100% { color: red; }
+        }
+
+    </style>
+</head>
+<body>
+    <script>
+        let popupCount = 0;
+        let maxPopups = 50; // Max number of popups to display
+
+        // Create a random integer between two values
+        function getRandomPosition(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        // Function to create a popup with specific message and position
+        function createPopup(message, centered = false) {
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+
+            if (centered) {
+                // Center the initial popup
+                popup.style.top = '50%';
+                popup.style.left = '50%';
+                popup.style.transform = 'translate(-50%, -50%)';
+            } else {
+                // Randomize the position for subsequent popups
+                popup.style.top = getRandomPosition(window.innerHeight - 150) + 'px';
+                popup.style.left = getRandomPosition(window.innerWidth - 300) + 'px';
+            }
+
+            const header = document.createElement('div');
+            header.className = 'popup-header';
+            const title = document.createElement('span');
+            title.textContent = "Popup Window";
+            const closeButton = document.createElement('button');
+            closeButton.textContent = "X";
+
+            // Close function for the popups
+            closeButton.onclick = function() {
+                popup.remove();
+                if (centered) {
+                    // Start multiplying popups when the initial centered popup is closed
+                    startMultiplyingPopups();
+                }
+            };
+
+            header.appendChild(title);
+            header.appendChild(closeButton);
+            popup.appendChild(header);
+
+            const body = document.createElement('div');
+            body.className = 'popup-body';
+
+            // Create the flashing warning symbol
+            const warningSymbol = document.createElement('span');
+            warningSymbol.className = 'warning-symbol';
+            warningSymbol.textContent = '⚠️';
+
+            // Add message with warning symbol
+            const messageText = document.createElement('span');
+            messageText.textContent = message;
+
+            body.appendChild(warningSymbol); // Add flashing symbol
+            body.appendChild(messageText);   // Add the message
+
+            popup.appendChild(body);
+
+            document.body.appendChild(popup);
+        }
+
+        // Function to start multiplying popups
+        function startMultiplyingPopups() {
+            setInterval(() => {
+                if (popupCount >= maxPopups) return;
+
+                const messages = [
+                    "This is a pop up",
+                    "Pop up",
+                    "I made you look at this pop up"
+                ];
+
+                messages.forEach(message => {
+                    if (popupCount < maxPopups) {
+                        createPopup(message);
+                        popupCount++;
+                    }
+                });
+            }, 1000); // Duplicate popups every second
+        }
+
+        // Create the first centered popup with the message "Pop up"
+        createPopup("Pop up", true);
+
+    </script>
+</body>
+</html>
